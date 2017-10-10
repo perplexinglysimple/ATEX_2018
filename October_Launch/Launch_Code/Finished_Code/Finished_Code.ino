@@ -3,7 +3,6 @@
 
 #include <Wire.h>
 #include <OneWire.h>
-#include <quaternionFilters.h>
 #include <SFE_BMP180.h>
 
 
