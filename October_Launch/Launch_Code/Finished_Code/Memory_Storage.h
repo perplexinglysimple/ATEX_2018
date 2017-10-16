@@ -64,7 +64,7 @@ private:
     
   float longtofloat(int8_t a);
 
-  int32_t last_read [NUM_DEVICES];
+  long last_read [NUM_DEVICES];
 };
 
 
@@ -73,7 +73,7 @@ memorystorage::memorystorage()
 {
   for(int i = 0; i < NUM_DEVICES; i++)
   {
-	  last_read[i] = (int8_t)0x7FFFFFFF;
+	  last_read[i] = (long)0x7FFFFFFF;
   }
   recycle();
 }
@@ -92,6 +92,7 @@ bool memorystorage::dumpbuf() {
     Serial.begin(38400);
     Serial.print("Finished write at ");
     Serial.println(thiswrite);
+    Serial.end();
   #endif
   writeEEPROM(ADDRESSOFEEPROM, 0, uint8_t(thiswrite&0xFF));
   writeEEPROM(ADDRESSOFEEPROM, 1, uint8_t(thiswrite&0xFF00)>>8);
@@ -111,10 +112,10 @@ bool memorystorage::writedata(int8_t devicenumber, int32_t data) {
   if(thiswrite + 5 >= MEMORY_SIZE)
     return false;
   byte byteArray[4];
-  byteArray[0] = (int)((data >> 24) & 0xFF);
-  byteArray[1] = (int)((data >> 16) & 0xFF);
-  byteArray[2] = (int)((data >> 8) & 0XFF);
-  byteArray[3] = (int)((data & 0XFF));
+  byteArray[0] = (uint8_t)((data >> 24) & 0xFF);
+  byteArray[1] = (uint8_t)((data >> 16) & 0xFF);
+  byteArray[2] = (uint8_t)((data >> 8) & 0xFF);
+  byteArray[3] = (uint8_t)((data & 0xFF));
   int data_diff = data - last_read[devicenumber];
   last_read[devicenumber] = data;
   if(abs(data_diff) > INT16_MAX) {
@@ -132,9 +133,9 @@ bool memorystorage::writedata(int8_t devicenumber, int32_t data) {
       Serial.println(data_diff);
       Serial.end();
     #endif
-	  writeEEPROM(ADDRESSOFEEPROM, thiswrite + 1, devicenumber | 0X80);
-	  writeEEPROM(ADDRESSOFEEPROM, thiswrite + 2, (int8_t)((data_diff >> 8) & 0XFF));
-	  writeEEPROM(ADDRESSOFEEPROM, thiswrite + 3, (int8_t)(data_diff & 0XFF));
+	  writeEEPROM(ADDRESSOFEEPROM, thiswrite + 1, ((uint8_t)devicenumber | 0x80));
+	  writeEEPROM(ADDRESSOFEEPROM, thiswrite + 2, (uint8_t)((data_diff >> 8) & 0xFF));
+	  writeEEPROM(ADDRESSOFEEPROM, thiswrite + 3, (uint8_t)(data_diff & 0xFF));
 	  thiswrite += 3;
   }
   return true;

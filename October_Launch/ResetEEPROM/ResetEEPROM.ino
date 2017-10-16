@@ -2,13 +2,13 @@
 //This program resets or dumps the output of the eeprom to Serial.
 
 //Define RESET to reset the chip. Comment-out to dump the contents
-#define RESET
+//#define RESET
 
 #ifndef RESET
 #define OUT
 #endif
 
-#define MEMORY_SIZE 0x2000 //total bytes can be accessed 24LC64 = 0x2000 (maximum address = 0x1FFF)
+#define MEMORY_SIZE 0x8000 
 #include <Wire.h>    
  
 #define disk1 0x50    //Address of eeprom chip
@@ -50,15 +50,28 @@ void setup(void)
   Serial.print(readEEPROM(disk1, 2), HEX);
   Serial.println();
   unsigned int address = 0;
-  for(size_t i = 3; i < MEMORY_SIZE; i++)
+  for(size_t i = 3; i < MEMORY_SIZE; i = i)
   {
-    Serial.print(readEEPROM(disk1, i), HEX);
-    Serial.print(:);
-    Serial.print(readEEPROM(disk1, i), HEX);
-    Serial.print(readEEPROM(disk1, i), HEX);
-    Serial.print(readEEPROM(disk1, i), HEX);
-    Serial.print(readEEPROM(disk1, i), HEX);
-    Serial.println();
+    byte temp = readEEPROM(disk1, i);
+    Serial.print(temp, HEX);
+    Serial.print(",");
+    if((temp & 0x80) == 0x80){
+      Serial.print(readEEPROM(disk1, i + 1), HEX);
+      Serial.print(",");
+      Serial.print(readEEPROM(disk1, i + 2), HEX);
+      i = i + 3;
+    }
+    else{
+      Serial.print(readEEPROM(disk1, i + 1), HEX);
+      Serial.print(",");
+      Serial.print(readEEPROM(disk1, i + 2), HEX);
+      Serial.print(",");
+      Serial.print(readEEPROM(disk1, i + 3), HEX);
+      Serial.print(",");
+      Serial.print(readEEPROM(disk1, i + 4), HEX);
+      Serial.println();
+      i = i + 5;
+    }
   }
   Serial.println();
 

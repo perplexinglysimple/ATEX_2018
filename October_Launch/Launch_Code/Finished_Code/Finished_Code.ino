@@ -128,7 +128,7 @@ while(1)
       Serial.println("Reading BMP");
       Serial.println(_pread);
     #endif
-    store.writedata(0x0,int32_t(_pread*10));
+    store.writedata(0x00,long(_pread*10));
     state = TEMP;
     break;
   case TEMP://device number 0x1-0x3
@@ -140,8 +140,8 @@ while(1)
       Serial.println(Temp_1);
       Serial.println(Temp_2);
     #endif
-    store.writedata(0x1, int32_t(Temp_1*10));
-    store.writedata(0x2, int32_t(Temp_2*10));
+    store.writedata(0x01, long(Temp_1*10));
+    store.writedata(0x02, long(Temp_2*10));
     state = TIME;
     break;
   case TIME://device number 0xE
